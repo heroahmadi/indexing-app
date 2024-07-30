@@ -1,6 +1,6 @@
 package org.indexing;
 
-import org.indexing.rule.IndexingService;
+import org.indexing.service.IndexingService;
 
 import java.util.concurrent.ExecutionException;
 

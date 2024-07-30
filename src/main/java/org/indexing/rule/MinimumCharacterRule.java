@@ -1,6 +1,4 @@
-package org.indexing.service;
-
-import org.indexing.rule.IndexingRule;
+package org.indexing.rule;
 
 public class MinimumCharacterRule implements IndexingRule {
 
