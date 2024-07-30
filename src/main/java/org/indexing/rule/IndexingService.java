@@ -1,5 +1,6 @@
-package org.indexing.service;
+package org.indexing.rule;
 
+import org.indexing.service.MinimumCharacterRule;
 import org.indexing.util.FileReader;
 
 import java.io.File;
@@ -12,6 +13,9 @@ import java.util.concurrent.*;
 import static java.util.Arrays.asList;
 
 public class IndexingService {
+    private final List<IndexingRule> INDEXING_RULES = asList(
+            new MinimumCharacterRule(),
+            new UppercaseRule());
 
     public List<String> run(List<String> fileNames) throws InterruptedException, ExecutionException {
         List<File> files = FileReader.read(fileNames);
@@ -33,11 +37,11 @@ public class IndexingService {
         return output;
     }
 
-    private static Callable<List<String>> createTask(File file) {
+    private Callable<List<String>> createTask(File file) {
         return () -> runIndexing(file);
     }
 
-    private static List<String> runIndexing(File file) {
+    private List<String> runIndexing(File file) {
         List<String> output = new ArrayList<>();
         try {
             Scanner scanner = new Scanner(file);
@@ -45,8 +49,7 @@ public class IndexingService {
 
             while (scanner.hasNext()) {
                 String word = scanner.next();
-                List<IndexingRule> indexingRules = asList(new MinimumCharacterRule(), new UppercaseRule());
-                for (IndexingRule indexingRule: indexingRules) {
+                for (IndexingRule indexingRule: INDEXING_RULES) {
                     if (indexingRule.isTrue(word)) {
                         System.out.println(word);
                         output.add(word);

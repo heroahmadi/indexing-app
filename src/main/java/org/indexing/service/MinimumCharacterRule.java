@@ -1,5 +1,7 @@
 package org.indexing.service;
 
+import org.indexing.rule.IndexingRule;
+
 public class MinimumCharacterRule implements IndexingRule {
 
     @Override

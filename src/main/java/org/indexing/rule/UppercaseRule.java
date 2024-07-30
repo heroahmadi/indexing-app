@@ -1,4 +1,4 @@
-package org.indexing.service;
+package org.indexing.rule;
 
 public class UppercaseRule implements IndexingRule {
 

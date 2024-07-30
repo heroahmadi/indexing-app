@@ -1,6 +1,6 @@
 package org.indexing.service;
 
-import org.indexing.Main;
+import org.indexing.rule.IndexingService;
 import org.junit.jupiter.api.Test;
 
 import java.util.Comparator;
