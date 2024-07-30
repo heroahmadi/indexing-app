@@ -7,6 +7,7 @@ import org.indexing.util.FileReader;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +20,9 @@ public class IndexingService {
             new MinimumCharacterRule(),
             new UppercaseRule());
 
-    public List<String> run(List<String> fileNames) throws InterruptedException, ExecutionException {
+    public List<String> run(List<String> fileNames) throws InterruptedException, ExecutionException, FileNotFoundException {
         List<File> files = FileReader.read(fileNames);
+        validateFilesExist(files);
         int numThread = Math.min(files.size(), 10);
         ExecutorService executorService = Executors.newFixedThreadPool(numThread);
         CompletionService<List<String>> service = new ExecutorCompletionService<>(executorService);
@@ -37,6 +39,15 @@ public class IndexingService {
         executorService.shutdown();
 
         return output;
+    }
+
+    private void validateFilesExist(List<File> files) throws FileNotFoundException {
+        for (File file: files) {
+            if (!file.exists()) {
+                String errorMessage = "File '" + file.getName() + "' does not exists.";
+                throw new FileNotFoundException(errorMessage);
+            }
+        }
     }
 
     private Callable<List<String>> createTask(File file) {

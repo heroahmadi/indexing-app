@@ -3,6 +3,7 @@ package org.indexing.service;
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,8 +12,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import static java.util.Arrays.asList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class IndexingServiceTest {
 
@@ -27,6 +27,13 @@ public class IndexingServiceTest {
         output.sort(Comparator.naturalOrder());
 
         assertEquals(expected, output);
+    }
+
+    @Test
+    public void testFileNotFound() {
+        List<String> fileNames = asList("asd.txt");
+        IndexingService service = new IndexingService();
+        assertThrowsExactly(FileNotFoundException.class, () -> service.run(fileNames));
     }
 
     @Test
