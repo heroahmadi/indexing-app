@@ -19,7 +19,7 @@ public class IndexingService {
 
     public List<String> run(List<String> fileNames) throws InterruptedException, ExecutionException {
         List<File> files = FileReader.read(fileNames);
-        int numThread = Math.max(files.size(), 10);
+        int numThread = Math.min(files.size(), 10);
         ExecutorService executorService = Executors.newFixedThreadPool(numThread);
         CompletionService<List<String>> service = new ExecutorCompletionService<>(executorService);
         for (File file: files) {
