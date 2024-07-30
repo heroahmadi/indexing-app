@@ -1,17 +1,47 @@
 package org.indexing;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-public class Main {
-    public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+import org.indexing.util.FileReader;
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
+import java.util.concurrent.*;
+
+public class Main {
+    public static void main(String[] args) throws InterruptedException, ExecutionException {
+        List<File> files = FileReader.read(Arrays.asList(args));
+        int numThread = Math.max(files.size(), 10);
+        ExecutorService executorService = Executors.newFixedThreadPool(numThread);
+        CompletionService<Object> service = new ExecutorCompletionService<>(executorService);
+        for (File file: files) {
+            Callable<Object> task = createTask(file);
+            service.submit(task);
         }
+
+        for (int i=0; i < files.size(); i++) {
+            Future<Object> result = service.take();
+            result.get();
+        }
+    }
+
+    private static Callable<Object> createTask(File file) {
+        return () -> runIndexing(file);
+    }
+
+    private static Object runIndexing(File file) {
+        try {
+            Scanner scanner = new Scanner(file);
+            scanner.useDelimiter(" +");
+
+            while (scanner.hasNext()) {
+                System.out.println(scanner.next());
+            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        return null;
     }
 }
