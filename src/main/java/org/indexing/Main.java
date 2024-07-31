@@ -1,12 +1,9 @@
 package org.indexing;
 
-import org.indexing.model.IndexingOutput;
 import org.indexing.service.IndexingService;
-import org.indexing.util.OutputWriter;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import static java.util.Arrays.asList;
