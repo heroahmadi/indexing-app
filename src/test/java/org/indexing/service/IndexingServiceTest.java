@@ -45,7 +45,7 @@ public class IndexingServiceTest {
 
     @Test
     public void testWithLargeFile() throws ExecutionException, InterruptedException, IOException {
-        int numFiles = 3;
+        int numFiles = 15;
         List<String> fileNames = new ArrayList<>();
         for (int i=1; i<=numFiles; i++) {
             fileNames.add("test_file" + i + ".txt");

@@ -24,7 +24,7 @@ public class OutputWriter {
 
         String output = "File name: " + inputFileName +
                 "\nNumber of words starting with uppercase letter: " + totalWordsStartingWithUppercase +
-                "\nList of words longer than 5 chars: " + String.join(", ", wordsLongerThan5Chars) +
+                "\nList of words longer than 5 chars: " + String.join("\n", wordsLongerThan5Chars) +
                 "\n===================================\n";
         writeToFile(inputFileName, output);
     }
