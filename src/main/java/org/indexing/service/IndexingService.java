@@ -22,36 +22,31 @@ public class IndexingService {
 
     public List<String> run(List<String> fileNames) throws InterruptedException, ExecutionException, FileNotFoundException {
         List<File> files = FileReader.read(fileNames);
-        validateFilesExist(files);
         int numThread = Math.min(files.size(), 10);
         ExecutorService executorService = Executors.newFixedThreadPool(numThread);
         CompletionService<List<String>> service = new ExecutorCompletionService<>(executorService);
-        for (File file: files) {
-            Callable<List<String>> task = createTask(file);
-            service.submit(task);
-        }
+        createTasks(files, service);
+        List<String> output = getTasksOutput(files, service);
 
-        List<String> output = new ArrayList<>();
-        for (int i=0; i < files.size(); i++) {
-            Future<List<String>> result = service.take();
-            output.addAll(result.get());
-        }
         executorService.shutdown();
 
         return output;
     }
 
-    private void validateFilesExist(List<File> files) throws FileNotFoundException {
-        for (File file: files) {
-            if (!file.exists()) {
-                String errorMessage = "File '" + file.getName() + "' does not exists.";
-                throw new FileNotFoundException(errorMessage);
-            }
+    private List<String> getTasksOutput(List<File> files, CompletionService<List<String>> service) throws InterruptedException, ExecutionException {
+        List<String> output = new ArrayList<>();
+        for (int i=0; i < files.size(); i++) {
+            Future<List<String>> result = service.take();
+            output.addAll(result.get());
         }
+        return output;
     }
 
-    private Callable<List<String>> createTask(File file) {
-        return () -> runIndexing(file);
+    private void createTasks(List<File> files, CompletionService<List<String>> service) {
+        for (File file: files) {
+            Callable<List<String>> task = () -> runIndexing(file);
+            service.submit(task);
+        }
     }
 
     private List<String> runIndexing(File file) {

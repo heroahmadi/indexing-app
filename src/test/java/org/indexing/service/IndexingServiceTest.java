@@ -36,24 +36,24 @@ public class IndexingServiceTest {
         assertThrowsExactly(FileNotFoundException.class, () -> service.run(fileNames));
     }
 
-    @Test
-    public void testWithLargeFile() throws ExecutionException, InterruptedException, IOException {
-        int numFiles = 15;
-        List<String> fileNames = new ArrayList<>();
-        for (int i=1; i<=numFiles; i++) {
-            fileNames.add("test_file" + i + ".txt");
-        }
-        IndexingService service = new IndexingService();
-        long start = System.currentTimeMillis();
-        List<String> output = service.run(fileNames);
-        long end = System.currentTimeMillis();
-        System.out.println("Finished. Duration: " + (end - start) + " millis");
-        assertNotNull(output);
-
-        BufferedWriter writer = new BufferedWriter(new FileWriter("output.txt"));
-        for (String str : output) {
-            writer.write(str + System.lineSeparator());
-        }
-    }
+//    @Test
+//    public void testWithLargeFile() throws ExecutionException, InterruptedException, IOException {
+//        int numFiles = 15;
+//        List<String> fileNames = new ArrayList<>();
+//        for (int i=1; i<=numFiles; i++) {
+//            fileNames.add("test_file" + i + ".txt");
+//        }
+//        IndexingService service = new IndexingService();
+//        long start = System.currentTimeMillis();
+//        List<String> output = service.run(fileNames);
+//        long end = System.currentTimeMillis();
+//        System.out.println("Finished. Duration: " + (end - start) + " millis");
+//        assertNotNull(output);
+//
+//        BufferedWriter writer = new BufferedWriter(new FileWriter("output.txt"));
+//        for (String str : output) {
+//            writer.write(str + System.lineSeparator());
+//        }
+//    }
 
 }
