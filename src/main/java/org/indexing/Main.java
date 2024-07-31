@@ -21,6 +21,7 @@ public class Main {
             for (String str : output) {
                 writer.write(str + System.lineSeparator());
             }
+            writer.close();
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
         } catch (IOException e) {
