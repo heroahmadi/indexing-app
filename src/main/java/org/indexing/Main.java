@@ -16,7 +16,8 @@ public class Main {
     public static void main(String[] args) throws InterruptedException, ExecutionException, IOException {
         try {
             IndexingService service = new IndexingService();
-            List<IndexingOutput> output = service.run(asList(args));
+            service.run(asList(args));
+            System.out.println("Finished successfully. Check the output file in the output_***.txt");
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
         }
