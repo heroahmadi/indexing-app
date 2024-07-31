@@ -1,5 +1,7 @@
 package org.indexing.service;
 
+import org.indexing.model.IndexingOutput;
+import org.indexing.model.IndexingRuleType;
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedWriter;
@@ -20,11 +22,16 @@ public class IndexingServiceTest {
     public void testWithSmallFile() throws ExecutionException, InterruptedException, IOException {
         List<String> fileNames = asList("input.txt");
         IndexingService service = new IndexingService();
-        List<String> expected = asList("Test", "<qe23oasfasjk", "Asa", "qeqioroi2u12321", "Aq");
-        List<String> output = service.run(fileNames);
+        List<IndexingOutput> expected = asList(
+                new IndexingOutput("Test", IndexingRuleType.UPPERCASE),
+                new IndexingOutput("<qe23oasfasjk", IndexingRuleType.MINIMUM_CHAR),
+                new IndexingOutput("Asa", IndexingRuleType.UPPERCASE),
+                new IndexingOutput("qeqioroi2u12321", IndexingRuleType.MINIMUM_CHAR),
+                new IndexingOutput("Aq", IndexingRuleType.UPPERCASE));
+        List<IndexingOutput> output = service.run(fileNames);
         assertNotNull(output);
-        expected.sort(Comparator.naturalOrder());
-        output.sort(Comparator.naturalOrder());
+        expected.sort(Comparator.comparing(IndexingOutput::word));
+        output.sort(Comparator.comparing(IndexingOutput::word));
 
         assertEquals(expected, output);
     }
@@ -36,24 +43,19 @@ public class IndexingServiceTest {
         assertThrowsExactly(FileNotFoundException.class, () -> service.run(fileNames));
     }
 
-//    @Test
-//    public void testWithLargeFile() throws ExecutionException, InterruptedException, IOException {
-//        int numFiles = 15;
-//        List<String> fileNames = new ArrayList<>();
-//        for (int i=1; i<=numFiles; i++) {
-//            fileNames.add("test_file" + i + ".txt");
-//        }
-//        IndexingService service = new IndexingService();
-//        long start = System.currentTimeMillis();
-//        List<String> output = service.run(fileNames);
-//        long end = System.currentTimeMillis();
-//        System.out.println("Finished. Duration: " + (end - start) + " millis");
-//        assertNotNull(output);
-//
-//        BufferedWriter writer = new BufferedWriter(new FileWriter("output.txt"));
-//        for (String str : output) {
-//            writer.write(str + System.lineSeparator());
-//        }
-//    }
+    @Test
+    public void testWithLargeFile() throws ExecutionException, InterruptedException, IOException {
+        int numFiles = 3;
+        List<String> fileNames = new ArrayList<>();
+        for (int i=1; i<=numFiles; i++) {
+            fileNames.add("test_file" + i + ".txt");
+        }
+        IndexingService service = new IndexingService();
+        long start = System.currentTimeMillis();
+        List<IndexingOutput> output = service.run(fileNames);
+        long end = System.currentTimeMillis();
+        System.out.println("Finished. Duration: " + (end - start) + " millis");
+        assertNotNull(output);
+    }
 
 }

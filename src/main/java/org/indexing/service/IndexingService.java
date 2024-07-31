@@ -1,9 +1,8 @@
 package org.indexing.service;
 
-import org.indexing.rule.IndexingRule;
-import org.indexing.rule.MinimumCharacterRule;
-import org.indexing.rule.UppercaseRule;
+import org.indexing.model.IndexingOutput;
 import org.indexing.util.FileReader;
+import org.indexing.util.OutputWriter;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,50 +19,50 @@ public class IndexingService {
             new MinimumCharacterRule(),
             new UppercaseRule());
 
-    public List<String> run(List<String> fileNames) throws InterruptedException, ExecutionException, FileNotFoundException {
+    public List<IndexingOutput> run(List<String> fileNames) throws InterruptedException, ExecutionException, FileNotFoundException {
         List<File> files = FileReader.read(fileNames);
         int numThread = Math.min(files.size(), 10);
         ExecutorService executorService = Executors.newFixedThreadPool(numThread);
-        CompletionService<List<String>> service = new ExecutorCompletionService<>(executorService);
+        CompletionService<List<IndexingOutput>> service = new ExecutorCompletionService<>(executorService);
         createTasks(files, service);
-        List<String> output = getTasksOutput(files, service);
+        List<IndexingOutput> output = getTasksOutput(files, service);
 
         executorService.shutdown();
 
         return output;
     }
 
-    private List<String> getTasksOutput(List<File> files, CompletionService<List<String>> service) throws InterruptedException, ExecutionException {
-        List<String> output = new ArrayList<>();
+    private List<IndexingOutput> getTasksOutput(List<File> files, CompletionService<List<IndexingOutput>> service) throws InterruptedException, ExecutionException {
+        List<IndexingOutput> output = new ArrayList<>();
         for (int i=0; i < files.size(); i++) {
-            Future<List<String>> result = service.take();
+            Future<List<IndexingOutput>> result = service.take();
             output.addAll(result.get());
         }
         return output;
     }
 
-    private void createTasks(List<File> files, CompletionService<List<String>> service) {
+    private void createTasks(List<File> files, CompletionService<List<IndexingOutput>> service) {
         for (File file: files) {
-            Callable<List<String>> task = () -> runIndexing(file);
+            Callable<List<IndexingOutput>> task = () -> runIndexing(file);
             service.submit(task);
         }
     }
 
-    private List<String> runIndexing(File file) {
-        List<String> output = new ArrayList<>();
+    private List<IndexingOutput> runIndexing(File file) {
+        List<IndexingOutput> output = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new java.io.FileReader(file))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] words = line.split(" +|(\r?\n)+");
                 for (String word: words) {
                     for (IndexingRule indexingRule: INDEXING_RULES) {
-                        if (indexingRule.isTrue(word)) {
-                            System.out.println(word);
-                            output.add(word);
+                        if (indexingRule.isMeetCriteria(word)) {
+                            output.add(indexingRule.getOutput(word));
                         }
                     }
                 }
             }
+            OutputWriter.printOutput(file.getName(), output);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
