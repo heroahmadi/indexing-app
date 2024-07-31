@@ -1,12 +1,10 @@
 package org.indexing.service;
 
-import org.indexing.model.IndexingOutput;
+import org.indexing.model.IndexingResult;
 import org.indexing.model.IndexingRuleType;
 import org.junit.jupiter.api.Test;
 
-import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -22,16 +20,16 @@ public class IndexingServiceTest {
     public void testWithSmallFile() throws ExecutionException, InterruptedException, IOException {
         List<String> fileNames = asList("input.txt");
         IndexingService service = new IndexingService();
-        List<IndexingOutput> expected = asList(
-                new IndexingOutput("Test", IndexingRuleType.UPPERCASE),
-                new IndexingOutput("<qe23oasfasjk", IndexingRuleType.MINIMUM_CHAR),
-                new IndexingOutput("Asa", IndexingRuleType.UPPERCASE),
-                new IndexingOutput("qeqioroi2u12321", IndexingRuleType.MINIMUM_CHAR),
-                new IndexingOutput("Aq", IndexingRuleType.UPPERCASE));
-        List<IndexingOutput> output = service.run(fileNames);
+        List<IndexingResult> expected = asList(
+                new IndexingResult("Test", IndexingRuleType.UPPERCASE),
+                new IndexingResult("<qe23oasfasjk", IndexingRuleType.MINIMUM_CHAR),
+                new IndexingResult("Asa", IndexingRuleType.UPPERCASE),
+                new IndexingResult("qeqioroi2u12321", IndexingRuleType.MINIMUM_CHAR),
+                new IndexingResult("Aq", IndexingRuleType.UPPERCASE));
+        List<IndexingResult> output = service.run(fileNames);
         assertNotNull(output);
-        expected.sort(Comparator.comparing(IndexingOutput::word));
-        output.sort(Comparator.comparing(IndexingOutput::word));
+        expected.sort(Comparator.comparing(IndexingResult::word));
+        output.sort(Comparator.comparing(IndexingResult::word));
 
         assertEquals(expected, output);
     }
@@ -52,7 +50,7 @@ public class IndexingServiceTest {
         }
         IndexingService service = new IndexingService();
         long start = System.currentTimeMillis();
-        List<IndexingOutput> output = service.run(fileNames);
+        List<IndexingResult> output = service.run(fileNames);
         long end = System.currentTimeMillis();
         System.out.println("Finished. Duration: " + (end - start) + " millis");
         assertNotNull(output);
